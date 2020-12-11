@@ -15,7 +15,7 @@
 
 1. Клонируйте этот репозиторий на свой компьютер
 ```yaml
-git clone https://github.com/NurbekMakhmudov/HomeFinance.git
+git clone https://github.com/NurbekMakhmudov/home-finance.git
 ```
 
 2. Отредактируйте файл .env для своей базы данных
