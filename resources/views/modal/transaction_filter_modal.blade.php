@@ -32,8 +32,8 @@
                                         <label for="recipient-name" class="col-form-label">Тип счета:</label>
                                         <select class="form-control" id="select5" name="type">
                                             <option value="all">Все</option>
-                                            <option value="income">Доход</option>
-                                            <option value="consumption">Расход</option>
+                                            <option value="Доход">Доход</option>
+                                            <option value="Расход">Расход</option>
                                         </select>
                                     </div>
                                 </div>

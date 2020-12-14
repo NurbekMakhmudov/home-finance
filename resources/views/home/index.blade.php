@@ -14,7 +14,11 @@
             </div>--}}
         </div>
 
-        <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+        @if(!$transactions->isEmpty())
+            <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+        @else
+            <h5>Создавайте сначала категория а потом можете использовать транзакциями.</h5>
+        @endif
 
     </main>
 

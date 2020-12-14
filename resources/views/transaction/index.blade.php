@@ -14,11 +14,13 @@
                     </button>
                 </div>
 
+                @if(!$transactions->isEmpty())
                 <div class="btn-group mr-2">
                     <button type="button" class="btn btn-sm btn-outline-secondary"
                             data-toggle="modal" data-target="#filterModal">Фильтр
                     </button>
                 </div>
+                @endif
 
                 @if($filter === 'YES')
                     <div class="btn-group mr-2">

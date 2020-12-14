@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TransactionRequest;
 use App\Models\Category;
 use App\Models\Transaction;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller {
@@ -16,34 +15,52 @@ class TransactionController extends Controller {
 
     public function index() {
         $email = Auth::user()->email;
+
         $categories = Category::where('user_email', $email)->get();
         $transactions = Transaction::where('user_email', $email)->get();
 
         $total = Transaction::where('user_email', $email)->sum('amount');
 
-        $end_date = Carbon::now();
-        $start_date = $end_date->firstOfMonth();
+        $start_date = Transaction::where('user_email', $email)->pluck('create_date')->min();
+        $end_date = Transaction::where('user_email', $email)->pluck('create_date')->max();
 
         $filter = 'NO';
-        return view('transaction.index',
-            compact('transactions', 'categories', 'filter', 'total', 'start_date', 'end_date'));
+        return view('transaction.index', compact('transactions', 'categories', 'filter', 'total', 'start_date', 'end_date'));
     }
 
     public function filter(TransactionRequest $req) {
         $email = Auth::user()->email;
 
-        $transactions = Transaction::where('user_email', $email)->whereBetween('create_date', [$req->start_date, $req->end_date])->get();
-
         $categories = Category::where('user_email', $email)->get();
 
-        $total = Transaction::where('user_email', $email)->sum('amount');
+        $transactions = null;
+        $total = null;
+
+        if ($req->type === 'all'){
+
+            $transactions = Transaction::where('user_email', '=', $email)
+                ->whereBetween('create_date', [$req->start_date, $req->end_date])->get();
+
+            $total = Transaction::where('user_email', $email)
+                ->whereBetween('create_date', [$req->start_date, $req->end_date])->sum('amount');
+
+        }else{
+            $transactions = Transaction::where([
+                ['user_email', '=', $email],
+                ['type', '=', $req->type]
+            ])->whereBetween('create_date', [$req->start_date, $req->end_date])->get();
+
+            $total = Transaction::where([
+                ['user_email', '=', $email],
+                ['type', '=', $req->type]
+            ])->whereBetween('create_date', [$req->start_date, $req->end_date])->sum('amount');
+        }
 
         $start_date = $req->start_date;
         $end_date = $req->end_date;
 
         $filter = 'YES';
-        return view('transaction.index',
-            compact('transactions', 'categories', 'filter', 'total', 'req', 'start_date', 'end_date'));
+        return view('transaction.index', compact('transactions', 'categories', 'filter', 'total', 'req', 'start_date', 'end_date'));
     }
 
 
@@ -59,7 +76,6 @@ class TransactionController extends Controller {
         $transaction->category = $req->input('category');
         $transaction->create_date = $req->input('create_date');
         $transaction->amount = $req->input('amount');
-        $transaction->total = $req->input('total');
         $transaction->comments = $req->input('comments');
         $transaction->user_email = $email;
 

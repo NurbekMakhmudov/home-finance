@@ -49,18 +49,11 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-12">
                             <div class="form-group">
                                 <label for="recipient-name" class="col-form-label">Сумма транзакции:</label>
                                 <input required type="number" value="{{$transaction->amount}}" class="form-control"
                                        name="amount">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 other">
-                            <div class="form-group">
-                                <label for="recipient-name" class="col-form-label">Итого:</label>
-                                <input required type="number" class="form-control" name="total"
-                                       value="{{$transaction->total}}">
                             </div>
                         </div>
                     </div>
