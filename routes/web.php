@@ -30,6 +30,8 @@ Route::get('/transaction/edit/{transaction}', 'TransactionController@edit')->nam
 
 Route::patch('/transaction/update/{transaction}', 'TransactionController@update')->name('transaction-update');
 
+Route::post('/transaction', 'TransactionController@filter')->name('transaction-filter');
+
 
 // Home
 Route::get('/', 'HomeController@index')->name('home-index');
