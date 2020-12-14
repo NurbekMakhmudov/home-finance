@@ -6,16 +6,24 @@
 
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
             <h1 class="h2">Панель управления</h1>
-            {{--<div class="btn-toolbar mb-2 mb-md-0">
+
+            {{--Не закончен
+
+            <div class="btn-toolbar mb-2 mb-md-0">
                 <div class="btn-group mr-2">
                     <button type="button" class="btn btn-sm btn-outline-secondary">Поделиться</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary">Экспорт</button>
                 </div>
             </div>--}}
+
         </div>
 
         @if(!$transactions->isEmpty())
-            <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+            {{-- Не закончен
+            <div class="col-lg-12">
+                <canvas id="transactionsChart" class="rounded shadow"></canvas>
+            </div>--}}
+            <h5>Статистика на разработке </h5>
         @else
             <h5>Создавайте сначала категория а потом можете использовать транзакциями.</h5>
         @endif
