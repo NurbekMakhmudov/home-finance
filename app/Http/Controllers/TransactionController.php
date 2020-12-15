@@ -19,7 +19,13 @@ class TransactionController extends Controller {
         $categories = Category::where('user_email', $email)->get();
         $transactions = Transaction::where('user_email', $email)->get();
 
-        $total = Transaction::where('user_email', $email)->sum('amount');
+        $total = 0;
+        foreach ($transactions as $transaction){
+            if ($transaction->type === 'Доход')
+                $total += $transaction->amount;
+            if ($transaction->type === 'Расход')
+                $total -= $transaction->amount;
+        }
 
         $start_date = Transaction::where('user_email', $email)->pluck('create_date')->min();
         $end_date = Transaction::where('user_email', $email)->pluck('create_date')->max();
@@ -30,35 +36,21 @@ class TransactionController extends Controller {
 
     public function filter(TransactionRequest $req) {
         $email = Auth::user()->email;
-
         $categories = Category::where('user_email', $email)->get();
 
-        $transactions = null;
-        $total = null;
+        $transactions = Transaction::where('user_email', '=', $email)
+            ->whereBetween('create_date', [$req->start_date, $req->end_date])->get();
 
-        if ($req->type === 'all'){
-
-            $transactions = Transaction::where('user_email', '=', $email)
-                ->whereBetween('create_date', [$req->start_date, $req->end_date])->get();
-
-            $total = Transaction::where('user_email', $email)
-                ->whereBetween('create_date', [$req->start_date, $req->end_date])->sum('amount');
-
-        }else{
-            $transactions = Transaction::where([
-                ['user_email', '=', $email],
-                ['type', '=', $req->type]
-            ])->whereBetween('create_date', [$req->start_date, $req->end_date])->get();
-
-            $total = Transaction::where([
-                ['user_email', '=', $email],
-                ['type', '=', $req->type]
-            ])->whereBetween('create_date', [$req->start_date, $req->end_date])->sum('amount');
+        $total = 0;
+        foreach ($transactions as $transaction){
+            if ($transaction->type === 'Доход')
+                $total += $transaction->amount;
+            if ($transaction->type === 'Расход')
+                $total -= $transaction->amount;
         }
 
         $start_date = $req->start_date;
         $end_date = $req->end_date;
-
         $filter = 'YES';
         return view('transaction.index', compact('transactions', 'categories', 'filter', 'total', 'req', 'start_date', 'end_date'));
     }
@@ -72,7 +64,16 @@ class TransactionController extends Controller {
         $transaction = new Transaction();
         $email = Auth::user()->email;
 
-        $transaction->type = $req->input('type');
+        $type = $req->input('type');
+        $max_total = Transaction::where('user_email', $email)->pluck('total')->last();
+
+        if ($type === 'Доход')
+            $transaction->total = $max_total + $req->input('amount');
+
+        if ($type === 'Расход')
+            $transaction->total = $max_total - $req->input('amount');
+
+        $transaction->type = $type;
         $transaction->category = $req->input('category');
         $transaction->create_date = $req->input('create_date');
         $transaction->amount = $req->input('amount');
@@ -98,7 +99,15 @@ class TransactionController extends Controller {
     }
 
     public function update(TransactionRequest $req, Transaction $transaction) {
-        $transaction->update(['type' => $req->type, 'category' => $req->category, 'create_date' => $req->create_date, 'amount' => $req->amount, 'total' => $req->total, 'comments' => $req->comments]);
+        $transaction->
+        update([
+            'type' => $req->type,
+            'category' => $req->category,
+            'create_date' => $req->create_date,
+            'amount' => $req->amount,
+            'total' => $req->amount,
+            'comments' => $req->comments
+        ]);
         return redirect()->route('transaction-index');
     }
 
